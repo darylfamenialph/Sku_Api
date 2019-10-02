@@ -15,12 +15,12 @@ class GetModel:
             get_model_qry = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id= %s AND model_name= %s;"
 
             cursor.execute(get_model_qry, (manufacturer_id, model_string,))
-
+            row_headers = [x[0] for x in cursor.description]
             data_collection = cursor.fetchall()
             data_array = []
             if len(data_collection) > 0:
                 for data in data_collection:
-                    data_array.append({r'manufacturer_id': data[0], r'model_id': data[1], r'model_name': data[2], r'model_code': data[3], r'iteration': data[4]})
+                    data_array.append(dict(zip(row_headers, data)))
                 result = json.dumps(data_array)
             else:
                 generated_sku = create_sku.generate_sku(model_string, iteration)
@@ -53,11 +53,11 @@ class GetModel:
                 # Getting Inserted Data
                 check_new_inserted_model = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id = %s AND model_code= %s;"
                 cursor.execute(check_new_inserted_model, (manufacturer_id, next_iteration_generated_sku,))
+                new_row_headers = [x[0] for x in cursor.description]
                 check_new_result = cursor.fetchall()
                 new_result_array = []
                 for new_result in check_new_result:
-                    new_result_array.append({r'manufacturer_id': new_result[0], r'model_id': new_result[1], r'model_name': new_result[2],
-                                       r'model_code': new_result[3], r'iteration': new_result[4]})
+                    new_result_array.append(dict(zip(new_row_headers, new_result)))
 
                 result = json.dumps(new_result_array)
 
@@ -72,6 +72,6 @@ class GetModel:
         return result
 
 
-print(GetModel.get_model_code("iPhone 13 Pro Max", 2, 0))
+#print(GetModel.get_model_code("iPhone 13 Pro Max", 2, 0))
 
 
