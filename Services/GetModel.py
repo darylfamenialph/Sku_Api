@@ -1,6 +1,7 @@
 from Services import BaseService
 from mysql.connector import Error
 from Logic import create_sku
+import json
 
 
 
@@ -8,50 +9,57 @@ from Logic import create_sku
 class GetModel:
     def get_model_code(model_string, manufacturer_id, iteration):
         try:
-            result = ""
+
             connection = BaseService.sku_connect()
             cursor = connection.cursor()
             get_model_qry = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id= %s AND model_name= %s;"
 
             cursor.execute(get_model_qry, (manufacturer_id, model_string,))
 
-            data = cursor.fetchall()
-            if len(data) > 0:
-                result = data
+            data_collection = cursor.fetchall()
+            data_array = []
+            if len(data_collection) > 0:
+                for data in data_collection:
+                    data_array.append({r'manufacturer_id': data[0], r'model_id': data[1], r'model_name': data[2], r'model_code': data[3], r'iteration': data[4]})
+                result = json.dumps(data_array)
             else:
                 generated_sku = create_sku.generate_sku(model_string, iteration)
                 check_model = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id= %s AND model_code= %s;"
                 cursor.execute(check_model, (manufacturer_id, generated_sku,))
                 check_result = cursor.fetchall()
+                model_iteration = 0
                 for row in check_result:
-                    model_iteration = int(row[4])
+                    if len(row) > 0:
+                        model_iteration = int(row[4])
+                    else:
+                        model_iteration = 0
 
-                if len(check_result) > 0:
+                iteration = model_iteration + 1
 
-                    iteration = model_iteration + 1
+                existence_result = 1
+                while existence_result > 0:
+                    next_iteration_generated_sku = create_sku.generate_sku(model_string, iteration)
+                    check_model_code_existence = "SELECT COUNT(*) FROM model WHERE is_active = 1 AND manufacturer_id= %s AND model_code= %s;"
+                    cursor.execute(check_model_code_existence, (manufacturer_id, next_iteration_generated_sku,))
+                    check_existence_result = cursor.fetchone()
+                    existence_result = int(check_existence_result[0])
+                    if existence_result > 0:
+                        iteration += 1
 
-                    existence_result = 1
-                    while existence_result > 0:
-                        next_iteration_generated_sku = create_sku.generate_sku(model_string, iteration)
-                        check_model_code_existence = "SELECT COUNT(*) FROM model WHERE is_active = 1 AND manufacturer_id= %s AND model_code= %s;"
-                        cursor.execute(check_model_code_existence, (manufacturer_id, next_iteration_generated_sku,))
-                        check_existence_result = cursor.fetchone()
-                        existence_result = int(check_existence_result[0])
-                        if existence_result > 0:
-                            iteration += 1
 
-                    insert_model = "INSERT INTO model(manufacturer_id,model_name,model_code,iteration) VALUES(%s,%s,%s,%s)"
-                    cursor.execute(insert_model, (manufacturer_id, model_string, next_iteration_generated_sku, iteration))
-                    connection.commit()
-                    # Getting Inserted Data
-                    check_new_inserted_model = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id = %s AND model_code= %s;"
-                    cursor.execute(check_new_inserted_model, (manufacturer_id, next_iteration_generated_sku,))
-                    check_new_result = cursor.fetchall()
+                insert_model = "INSERT INTO model(manufacturer_id,model_name,model_code,iteration) VALUES(%s,%s,%s,%s)"
+                cursor.execute(insert_model, (manufacturer_id, model_string, next_iteration_generated_sku, iteration))
+                connection.commit()
+                # Getting Inserted Data
+                check_new_inserted_model = "SELECT manufacturer_id,model_id,model_name, model_code,iteration FROM model WHERE is_active = 1 AND manufacturer_id = %s AND model_code= %s;"
+                cursor.execute(check_new_inserted_model, (manufacturer_id, next_iteration_generated_sku,))
+                check_new_result = cursor.fetchall()
+                new_result_array = []
+                for new_result in check_new_result:
+                    new_result_array.append({r'manufacturer_id': new_result[0], r'model_id': new_result[1], r'model_name': new_result[2],
+                                       r'model_code': new_result[3], r'iteration': new_result[4]})
 
-                    result = check_new_result
-
-                else:
-                    result = check_result
+                result = json.dumps(new_result_array)
 
         except Error as e:
             return e
@@ -64,6 +72,6 @@ class GetModel:
         return result
 
 
-print(GetModel.get_model_code("iPhone 7", 2, 0))
+print(GetModel.get_model_code("iPhone 13 Pro Max", 2, 0))
 
 

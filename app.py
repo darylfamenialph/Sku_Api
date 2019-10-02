@@ -1,7 +1,9 @@
-from flask import Flask,jsonify, request
+from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
+from Services import GetClient
 from Logic import create_sku
 import json
+
 
 
 app = Flask(__name__)
@@ -28,18 +30,21 @@ class Get_SKU(Resource):
         return data
 
 
-class Generate_SKU(Resource):
+class GenerateSku(Resource):
     def post(self):
-        request_json_data = json.dumps(request.get_json())
-        parsed_json = json.loads(request_json_data)
-        data = create_sku.generate_sku(parsed_json["input_string"], 0)
-        return {"result": data}, 201
+        try:
+            request_json_data = json.dumps(request.get_json())
+            parsed_json = json.loads(request_json_data)
+            data = GetClient.GetClient.get_client_code(parsed_json["Manufacturer"], 0)
+            return {"result": data}, 201
+        except:
+            return {"Error": "Invalid Input"}
 
 
 api.add_resource(HelloWorld, '/')
 api.add_resource(Multi, '/multi/<int:num>')
 api.add_resource(Get_SKU, '/get_sku/<string:input_string>')
-api.add_resource(Generate_SKU, '/generate_sku')
+api.add_resource(GenerateSku, '/generate_make_sku')
 
 if __name__ == '__main__':
     app.run(debug=True)

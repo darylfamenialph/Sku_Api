@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0eddbb81-a6c8-42d3-b819-b1402b653c53" name="Default Changelist" comment="" />
+    <list default="true" id="0eddbb81-a6c8-42d3-b819-b1402b653c53" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/GetClient.py" beforeDir="false" afterPath="$PROJECT_DIR$/Services/GetClient.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/GetModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/Services/GetModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/app.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +26,7 @@
   <component name="ProjectId" id="1Ra0hPbfFaLJ9h2bBSMT65VMAFn" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -35,7 +40,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.GetModel">
+  <component name="RunManager" selected="Python.app">
     <configuration name="GetClient" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="ApiTest" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -122,10 +127,10 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.GetModel" />
-        <item itemvalue="Python.create_sku" />
-        <item itemvalue="Python.GetClient" />
         <item itemvalue="Python.app" />
+        <item itemvalue="Python.GetModel" />
+        <item itemvalue="Python.GetClient" />
+        <item itemvalue="Python.create_sku" />
       </list>
     </recent_temporary>
   </component>
