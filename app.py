@@ -1,52 +1,34 @@
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
-from Services import GetClient, GetModel
+from Services import GetBlackbeltCode
 from Logic import create_sku
 import json
-
+import os
 
 
 app = Flask(__name__)
 api = Api(app)
 
 
-class HelloWorld(Resource):
-    def get(self):
-        return "hello"
-
-    def post(self):
-        some_json = request.get_json()
-        return {"you sent": some_json}, 201
-
-
-class Multi(Resource):
-    def get(self, num):
-        return {"result": num*10}
-
-
-class Get_SKU(Resource):
-    def get(self, input_string):
-        data = create_sku.generate_sku(input_string, 0)
-        return data
-
 
 class GenerateSku(Resource):
     def post(self):
-        request_json_data = json.dumps(request.get_json())
-        parsed_json = json.loads(request_json_data)
-        client_data = json.dumps(GetClient.GetClient.get_client_code(parsed_json["Manufacturer"], 0))
-        client_to_json = json.loads(client_data)
-        model_data = GetModel.GetModel.get_model_code(parsed_json["Model"], client_to_json["manufacturer_id"], 0)
-        model_to_json = json.loads(model_data)
-        result_data = r'{"sku":"' + client_to_json["manufacturer_code"] + model_to_json["model_code"] + '"}'
-        return {"result": result_data}, 201
+        try:
+            request_json_data = json.dumps(request.get_json())
+            parsed_json = json.loads(request_json_data)
+            access_token = parsed_json["access_token"]
+            if access_token == "x89dREsfoiuwai8Rxfaoi902UEyRi9S":
+                data = GetBlackbeltCode.GetBlackBelt.get_bb_code(parsed_json["Manufacturer"], parsed_json["Model"], str(parsed_json["Capacity"]))
+            else:
+                data = r'[{"result":"Access Token is not valid"}]'
+            return data
+        except:
+            return r'[{"result":"Missing Parameters"}]'
 
 
 
-api.add_resource(HelloWorld, '/')
-api.add_resource(Multi, '/multi/<int:num>')
-api.add_resource(Get_SKU, '/get_sku/<string:input_string>')
-api.add_resource(GenerateSku, '/generate_make_sku')
+api.add_resource(GenerateSku, '/generate_sku')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 9234))
+    app.run(debug=True, host='127.0.0.1', port=port)

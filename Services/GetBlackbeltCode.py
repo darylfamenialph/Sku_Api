@@ -76,6 +76,6 @@ class GetBlackBelt:
 
 
 
-print(GetBlackBelt.get_bb_code("Huawei", "Huawei Mate 11 Pro", "256"))
+#print(GetBlackBelt.get_bb_code("Huawei", "Huawei Mate 11 Pro", "256"))
 
 
